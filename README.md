@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mission Control — Hermes HQ
 
-## Getting Started
+Dashboard local (Next.js 16) que mostra o estado do Hermes Agent do Jp em tempo real, lendo direto do `~/.hermes` — sem banco externo, sem API, sem deploy.
 
-First, run the development server:
+## O que mostra
+
+| Página | Conteúdo |
+|---|---|
+| `/` | Visão geral: crons ativos/ok/erro, custo hoje/semana/mês, sessões recentes, último briefing ☀️, próximas execuções, alertas |
+| `/crons` | Tabela dos 13 jobs + histórico de execuções com contador de erros |
+| `/sessoes` | Sessões do perfil carreira: fonte, custo estimado, tokens, modelo |
+| `/custos` | Consumo por cron (usage_audit) com barras + custo por período |
+| `/memoria` | Editor de MEMORY.md e USER.md (salva direto no perfil) |
+
+## Fontes de dados (tudo local, read-only exceto memória)
+
+- `~/.hermes/cron/jobs.json` — definições/status dos crons
+- `~/.hermes/cron/executions.db` — histórico de execuções (SQLite)
+- `~/.hermes/profiles/carreira/state.db` — sessões, custos, tokens (SQLite)
+- `~/.hermes/cron/usage_audit.jsonl` — consumo por job
+- `~/.hermes/profiles/carreira/memories/MEMORY.md` + `USER.md` — memória (editável)
+
+## Rodar
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev        # http://localhost:3020
+npm run build      # valida produção
+npm run start      # produção na 3020
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Leitura dos `.db` via `node:sqlite` (Node 22+, nativo — sem dependências de compilação).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Notas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Custo é **estimativa**: USD × 5,4 (aproximação de conversão).
+- O dashboard lê o perfil `carreira` (`~/.hermes/profiles/carreira/`).
+- Sem autenticação — **só rode em máquina local / rede confiável**.
+- `NEXT_TELEMETRY_DISABLED=1` no `.env.local` (evita hang do build).
