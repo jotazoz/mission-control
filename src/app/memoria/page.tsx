@@ -24,7 +24,7 @@ export default function MemoriaPage() {
             arquivo={m.arquivo}
             titulo={m.titulo}
             conteudoInicial={m.conteudo}
-            mtime={m.mtime}
+            mtimeStr={m.mtime_str}
           />
         ))
       )}

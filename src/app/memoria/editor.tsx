@@ -7,12 +7,12 @@ export default function MemoriaEditor({
   arquivo,
   titulo,
   conteudoInicial,
-  mtime,
+  mtimeStr,
 }: {
   arquivo: string;
   titulo: string;
   conteudoInicial: string;
-  mtime: number;
+  mtimeStr: string;
 }) {
   const [conteudo, setConteudo] = useState(conteudoInicial);
   const [salvo, setSalvo] = useState<"ok" | "erro" | null>(null);
@@ -42,7 +42,7 @@ export default function MemoriaEditor({
         <div>
           <h2 className="text-sm font-semibold text-slate-200">{titulo}</h2>
           <div className="text-[10.5px] text-slate-600">
-            {arquivo} · {new Date(mtime).toLocaleString("pt-BR")}
+            {arquivo} · {mtimeStr}
           </div>
         </div>
         <button

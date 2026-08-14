@@ -257,6 +257,7 @@ export interface Memoria {
   titulo: string;
   conteudo: string;
   mtime: number;
+  mtime_str: string;
   tamanho: number;
 }
 
@@ -273,6 +274,7 @@ export const getMemorias = cache((): Memoria[] => {
       titulo: f === "MEMORY.md" ? "Memória do agente (MEMORY.md)" : "Perfil do usuário (USER.md)",
       conteudo: readFileSync(p, "utf-8"),
       mtime: st.mtimeMs,
+      mtime_str: new Date(st.mtimeMs).toLocaleString("pt-BR"),
       tamanho: st.size,
     });
   }
