@@ -8,7 +8,7 @@ Dashboard local (Next.js 16) que mostra o estado do Hermes Agent do Jp em tempo 
 
 ## 🚀 Demo ao vivo (Vercel)
 
-**[mission-control-mauve-six.vercel.app](https://mission-control-mauve-six.vercel.app)** — deploy público com **dataset demo sanitizado** (sem dados pessoais). Ideal para portfólio/recrutadores.
+**[mission-control.chuvadedados.com](https://mission-control.chuvadedados.com)** — deploy público com **dataset demo sanitizado** (sem dados pessoais). Ideal para portfólio/recrutadores.
 
 ![Mission Control dashboard](public/screenshot-dashboard.png)
 

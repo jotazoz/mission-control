@@ -4,9 +4,9 @@ A local dashboard (Next.js 16) showing the real-time state of the Hermes Agent, 
 
 > ⚠️ Project lives in `~/mission-control` (outside Desktop) because macOS TCC blocks launchd processes from accessing `~/Desktop` — the LaunchAgent `com.mission-control.server` starts the server with the Mac. A symlink exists at `~/Desktop/projetos/mission-control` pointing here.
 
-## 🚀 Live demo (Vercel)
+## 🚀 Live demo
 
-**[mission-control-mauve-six.vercel.app](https://mission-control-mauve-six.vercel.app)** — public deployment with a **sanitized demo dataset** (no personal data). Perfect for portfolios/recruiters.
+**[mission-control.chuvadedados.com](https://mission-control.chuvadedados.com)** — public deployment (Vercel) with a **sanitized demo dataset** (no personal data). Perfect for portfolios/recruiters.
 
 ![Mission Control dashboard](public/screenshot-dashboard.png)
 
