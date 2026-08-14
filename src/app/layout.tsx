@@ -9,6 +9,7 @@ import {
   Brain,
   Activity,
 } from "lucide-react";
+import { isDemoMode } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Mission Control — Hermes HQ",
@@ -23,7 +24,7 @@ const NAV = [
   { href: "/memoria", label: "Memória", icon: Brain },
 ];
 
-const DEMO = process.env.DEMO_MODE === "1" || process.env.NEXT_PUBLIC_DEMO_MODE === "1";
+const DEMO = isDemoMode();
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

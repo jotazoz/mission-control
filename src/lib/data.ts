@@ -16,6 +16,11 @@ function temDadosLocais(): boolean {
   return existsSync(join(CRON_DIR, "jobs.json"));
 }
 
+/** True quando o app está exibindo o dataset demo (Vercel ou DEMO_MODE=1). */
+export function isDemoMode(): boolean {
+  return DEMO_MODE || !temDadosLocais();
+}
+
 /* ------------------------------------------------------------------ */
 /* helpers                                                             */
 /* ------------------------------------------------------------------ */
