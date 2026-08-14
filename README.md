@@ -1,5 +1,7 @@
 # Mission Control — Hermes HQ
 
+> **🌎 English version: [README.en.md](README.en.md) / [English README](README.en.md)**
+
 Dashboard local (Next.js 16) que mostra o estado do Hermes Agent do Jp em tempo real, lendo direto do `~/.hermes` — sem banco externo, sem API, sem deploy.
 
 > ⚠️ Projeto em `~/mission-control` (fora do Desktop) porque o macOS TCC bloqueia processos launchd de acessar `~/Desktop` — o LaunchAgent `com.mission-control.server` sobe o servidor com o Mac. Há um symlink em `~/Desktop/projetos/mission-control` apontando pra cá.
