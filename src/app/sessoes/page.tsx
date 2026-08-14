@@ -1,4 +1,5 @@
 import { getSessoes, fmtTime, fmtUsd, relTempo } from "@/lib/data";
+import { MessagesSquare } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ export default function SessoesPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-bold text-slate-100">Sessões</h1>
+        <h1 className="flex items-center gap-2 text-xl font-bold text-slate-100"><MessagesSquare className="h-5 w-5 text-indigo-400" /> Sessões</h1>
         <p className="text-sm text-slate-500">
           {sessoes.length} sessões recentes do perfil carreira · custo estimado por sessão
         </p>

@@ -9,6 +9,7 @@ import {
   fmtUsd,
   relTempo,
 } from "@/lib/data";
+import { Bot, Wallet, MessageSquare, AlertTriangle, Sun, CalendarClock, Activity } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -48,22 +49,22 @@ export default function Home() {
       {/* linha de stats */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <div className="card">
-          <div className="stat-label">Crons ativos</div>
+          <div className="mb-1 flex items-center gap-1.5"><Bot className="h-3.5 w-3.5 text-sky-400" /><span className="stat-label">Crons ativos</span></div>
           <div className="stat">{ativos.length}</div>
           <div className="text-[11px] text-slate-500">{ok} ok · {comErro.length} com problema</div>
         </div>
         <div className="card">
-          <div className="stat-label">Custo hoje</div>
+          <div className="mb-1 flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-emerald-400" /><span className="stat-label">Custo hoje</span></div>
           <div className="stat">{fmtUsd(custo.dia)}</div>
           <div className="text-[11px] text-slate-500">semana {fmtUsd(custo.semana)}</div>
         </div>
         <div className="card">
-          <div className="stat-label">Sessões (7d)</div>
+          <div className="mb-1 flex items-center gap-1.5"><MessageSquare className="h-3.5 w-3.5 text-indigo-400" /><span className="stat-label">Sessões (7d)</span></div>
           <div className="stat">{sessoes.filter((s) => s.started_at && s.started_at > agora - 7 * 86400000).length}</div>
           <div className="text-[11px] text-slate-500">última {relTempo(sessoes[0]?.started_at)}</div>
         </div>
         <div className="card">
-          <div className="stat-label">Execuções com erro</div>
+          <div className="mb-1 flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5 text-rose-400" /><span className="stat-label">Execuções com erro</span></div>
           <div className="stat text-rose-400">{execErros.length}</div>
           <div className="text-[11px] text-slate-500">últimas 60 execuções</div>
         </div>
@@ -73,7 +74,7 @@ export default function Home() {
         {/* próximo briefing */}
         <div className="card">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-200">☀️ Último briefing de sistema</h2>
+            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-slate-200"><Sun className="h-4 w-4 text-amber-400" /> Último briefing de sistema</h2>
             {briefing && <span className="text-[11px] text-slate-500">{relTempo(briefing.quando)}</span>}
           </div>
           {briefing ? (
@@ -87,7 +88,7 @@ export default function Home() {
 
         {/* próximos runs */}
         <div className="card">
-          <h2 className="mb-2 text-sm font-semibold text-slate-200">⏱ Próximas execuções</h2>
+          <h2 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-200"><CalendarClock className="h-4 w-4 text-sky-400" /> Próximas execuções</h2>
           <div className="space-y-2">
             {proximos.length === 0 && <p className="text-sm text-slate-500">Nada agendado.</p>}
             {proximos.map((j) => (

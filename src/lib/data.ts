@@ -8,6 +8,14 @@ export const HERMES_HOME = join(os.homedir(), ".hermes");
 export const CRON_DIR = join(HERMES_HOME, "cron");
 export const PROFILE_DIR = join(HERMES_HOME, "profiles", "carreira");
 
+/** Modo demo: força dataset sanitizado mesmo com arquivos locais presentes.
+ *  Na Vercel (sem ~/.hermes) o fallback acontece automaticamente. */
+export const DEMO_MODE = process.env.DEMO_MODE === "1" || process.env.NEXT_PUBLIC_DEMO_MODE === "1";
+
+function temDadosLocais(): boolean {
+  return existsSync(join(CRON_DIR, "jobs.json"));
+}
+
 /* ------------------------------------------------------------------ */
 /* helpers                                                             */
 /* ------------------------------------------------------------------ */
@@ -82,6 +90,7 @@ export interface CronJob {
 }
 
 export const getJobs = cache((): CronJob[] => {
+  if (DEMO_MODE || !temDadosLocais()) return demoJobs();
   const data = readJson(join(CRON_DIR, "jobs.json"));
   if (!data) return [];
   const jobs = Array.isArray(data) ? data : data.jobs ?? [];
@@ -110,6 +119,7 @@ export interface Execucao {
 }
 
 export const getExecucoes = cache((limite = 200): Execucao[] => {
+  if (DEMO_MODE || !temDadosLocais()) return demoExecucoes();
   const dbPath = join(CRON_DIR, "executions.db");
   if (!existsSync(dbPath)) return [];
   try {
@@ -156,6 +166,7 @@ function stateDbPath(): string {
 }
 
 export const getSessoes = cache((limite = 50): Sessao[] => {
+  if (DEMO_MODE || !temDadosLocais()) return demoSessoes();
   try {
     const db = openDb(stateDbPath());
     const rows = db
@@ -204,6 +215,30 @@ export const getCustoTotal = cache((): { mes: number; semana: number; dia: numbe
   return { mes: m, semana: s, dia: d };
 });
 
+/** Série de custo por dia (últimos 14 dias) — para o gráfico. */
+export const getCustoSerie = cache((): { dia: string; custo: number }[] => {
+  if (DEMO_MODE || !temDadosLocais()) return demoCustoSerie();
+  const sess = getSessoes(5000);
+  const dias: { dia: string; custo: number }[] = [];
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(hoje.getTime() - i * 86400_000);
+    dias.push({
+      dia: d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
+      custo: 0,
+    });
+  }
+  for (const x of sess) {
+    if (!x.started_at || !x.custo) continue;
+    const d = new Date(x.started_at);
+    d.setHours(0, 0, 0, 0);
+    const idx = dias.findIndex((dd) => dd.dia === d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }));
+    if (idx >= 0) dias[idx].custo += x.custo;
+  }
+  return dias;
+});
+
 /* ------------------------------------------------------------------ */
 /* custos por job (usage_audit.jsonl)                                 */
 /* ------------------------------------------------------------------ */
@@ -219,6 +254,7 @@ export interface UsoJob {
 }
 
 export const getUsoPorJob = cache((): UsoJob[] => {
+  if (DEMO_MODE || !temDadosLocais()) return demoUsoPorJob();
   const path = join(CRON_DIR, "usage_audit.jsonl");
   if (!existsSync(path)) return [];
   const linhas = readFileSync(path, "utf-8").split("\n").filter(Boolean);
@@ -262,6 +298,7 @@ export interface Memoria {
 }
 
 export const getMemorias = cache((): Memoria[] => {
+  if (DEMO_MODE || !temDadosLocais()) return demoMemorias();
   const dir = join(PROFILE_DIR, "memories");
   if (!existsSync(dir)) return [];
   const out: Memoria[] = [];
@@ -283,6 +320,7 @@ export const getMemorias = cache((): Memoria[] => {
 
 export function salvarMemoria(arquivo: string, conteudo: string): { ok: boolean; erro?: string } {
   if (!["MEMORY.md", "USER.md"].includes(arquivo)) return { ok: false, erro: "arquivo inválido" };
+  if (DEMO_MODE || !temDadosLocais()) return { ok: false, erro: "modo demo — sem escrita local" };
   try {
     writeFileSync(join(PROFILE_DIR, "memories", arquivo), conteudo, "utf-8");
     return { ok: true };
@@ -296,6 +334,7 @@ export function salvarMemoria(arquivo: string, conteudo: string): { ok: boolean;
 /* ------------------------------------------------------------------ */
 
 export const getUltimoBriefing = cache((): { texto: string; quando: number | null } | null => {
+  if (DEMO_MODE || !temDadosLocais()) return demoBriefing();
   const dir = join(CRON_DIR, "output", "cdc5683c3d01");
   if (!existsSync(dir)) return null;
   const files = readdirSync(dir)
@@ -312,3 +351,165 @@ export const getUltimoBriefing = cache((): { texto: string; quando: number | nul
     quando: statSync(p).mtimeMs,
   };
 });
+
+/* ------------------------------------------------------------------ */
+/* dataset demo (sanitizado) — usado na Vercel ou com DEMO_MODE=1     */
+/* ------------------------------------------------------------------ */
+
+const AGORA = Date.now();
+const H = 3600_000;
+const D = 24 * H;
+
+function demoJobs(): CronJob[] {
+  const mk = (
+    id: string, nome: string, schedule: string, lastStatus: string | null,
+    lastOffset: number | null, nextOffset: number, noAgent = false
+  ): CronJob => ({
+    id, nome, schedule, enabled: true, state: "scheduled", no_agent: noAgent,
+    deliver: "telegram:demo",
+    last_run_at: lastOffset != null ? AGORA - lastOffset : null,
+    last_status: lastStatus,
+    last_error: null,
+    last_delivery_error: null,
+    next_run_at: AGORA + nextOffset,
+  });
+  return [
+    mk("job-morning-brief", "Briefing de sistema ☀️", "15 8 * * *", "ok", 26 * H, 22 * H),
+    mk("job-email", "Briefing de e-mails", "0 9 * * *", "ok", 3 * H, 9 * H),
+    mk("job-vagas", "Pipeline de vagas diário", "30 7 * * 1-5", "ok", 30 * H, 26 * H),
+    mk("job-sync", "Sincronização de vagas (planilha)", "0 8 * * *", "ok", 30 * H, 10 * H),
+    mk("job-content", "Curadoria de pautas (conteúdo)", "0 8 * * *", "ok", 30 * H, 10 * H),
+    mk("job-watchdog", "Watchdog de automações", "*/30 * * * *", "ok", 0.2 * H, 0.3 * H, true),
+    mk("job-client", "Monitoramento de clientes", "0 9,15 * * 1-5", "ok", 4 * H, 5 * H),
+    mk("job-resumo", "Resumo semanal (Notion)", "0 18 * * 0", "ok", 4 * D, 3 * D),
+    mk("job-panorama", "Edição semanal do jornal", "0 18 * * 0", "error", 1 * D, 6 * D),
+    mk("job-pesquisa", "Pesquisa de mercado semanal", "0 10 * * 1", "ok", 3 * D, 4 * D),
+    mk("job-estudo", "Lembrete de estudo", "0 9 * * 6", null, null, 2 * D),
+    mk("job-curriculo", "Lembrete currículo EN", "0 10 * * 6", null, null, 2 * D),
+  ];
+}
+
+function demoExecucoes(): Execucao[] {
+  const jobs = demoJobs();
+  const out: Execucao[] = [];
+  // watchdog a cada 30min nas últimas 8h
+  for (let i = 0; i < 16; i++) {
+    const t = AGORA - i * 0.5 * H;
+    out.push({ job_id: "job-watchdog", status: "completed", claimed_at: t, finished_at: t + 3000, error: null });
+  }
+  const recentes: Array<[string, string, number]> = [
+    ["job-email", "completed", 3 * H], ["job-content", "completed", 30 * H],
+    ["job-sync", "completed", 30 * H], ["job-vagas", "completed", 30 * H],
+    ["job-client", "completed", 4 * H], ["job-resumo", "completed", 4 * D],
+    ["job-panorama", "error", 1 * D],
+  ];
+  for (const [jid, status, offset] of recentes) {
+    const t = AGORA - offset;
+    out.push({
+      job_id: jid, status, claimed_at: t, finished_at: t + 30 * 60_000,
+      error: status === "error" ? "TimeoutError: Cron job idle for 1800s — waiting for non-streaming API response" : null,
+    });
+  }
+  return out.sort((a, b) => (b.claimed_at ?? 0) - (a.claimed_at ?? 0));
+}
+
+function demoSessoes(): Sessao[] {
+  const mk = (id: string, titulo: string, fonte: string, horas: number, custo: number, tin: number, tout: number, msgs: number, calls: number): Sessao => ({
+    id, titulo, fonte,
+    started_at: AGORA - horas * H, ended_at: AGORA - horas * H + 20 * 60_000,
+    custo, input_tokens: tin, output_tokens: tout, modelo: "claude-sonnet-4-5",
+    mensagens: msgs, api_calls: calls,
+  });
+  return [
+    mk("s1", "Planejamento semanal de conteúdo", "desktop", 2, 0.42, 240_000, 38_000, 87, 41),
+    mk("s2", "Análise de concorrentes (YouTube)", "desktop", 6, 0.31, 180_000, 25_000, 64, 30),
+    mk("s3", "Briefing de sistema ☀️", "cron", 26, 0.002, 1_300, 1_400, 2, 1),
+    mk("s4", "Resposta a recrutador", "telegram", 30, 0.09, 60_000, 9_000, 24, 11),
+    mk("s5", "Automação de pipeline de vagas", "desktop", 50, 0.88, 520_000, 120_000, 210, 98),
+    mk("s6", "Revisão de dashboard de clientes", "desktop", 75, 0.27, 150_000, 21_000, 55, 26),
+    mk("s7", "Relatório financeiro mensal", "desktop", 100, 0.55, 300_000, 60_000, 130, 62),
+    mk("s8", "Pesquisa de mercado (freelance)", "desktop", 140, 0.38, 210_000, 33_000, 90, 42),
+    mk("s9", "Edição do Panorama", "cron", 170, 0.15, 90_000, 15_000, 40, 19),
+    mk("s10", "Dúvidas de BI do time", "telegram", 200, 0.11, 70_000, 12_000, 30, 14),
+    mk("s11", "Curadoria NYT diária", "cron", 250, 0.08, 45_000, 8_000, 18, 8),
+    mk("s12", "Estudo AI Automation (LangGraph)", "desktop", 300, 0.19, 120_000, 18_000, 48, 22),
+  ];
+}
+
+function demoCustoSerie(): { dia: string; custo: number }[] {
+  // padrão realista: picos nos dias de semana (crons de trabalho), vales no fim de semana
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const pesos = [0.22, 0.9, 1.15, 0.75, 1.3, 0.95, 0.45, 0.18, 0.85, 1.05, 0.6, 1.2, 0.8, 0.35];
+  return pesos.map((p, i) => {
+    const d = new Date(hoje.getTime() - (13 - i) * 86400_000);
+    return {
+      dia: d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
+      custo: Math.round(p * 100) / 100,
+    };
+  });
+}
+
+function demoUsoPorJob(): UsoJob[] {
+  const mk = (job_id: string, nome: string, runs: number, tokens: number, ultimoH: number, erro = false): UsoJob => ({
+    job_id, nome, runs, total_tokens: tokens, model: "claude-sonnet-4-5", ultimo: AGORA - ultimoH * H, erro,
+  });
+  return [
+    mk("job-vagas", "Pipeline de vagas diário", 18, 3_200_000, 30),
+    mk("job-sync", "Sincronização de vagas (planilha)", 18, 2_400_000, 30),
+    mk("job-content", "Curadoria de pautas (conteúdo)", 14, 1_800_000, 30),
+    mk("job-client", "Monitoramento de clientes", 26, 1_200_000, 4),
+    mk("job-email", "Briefing de e-mails", 18, 900_000, 3),
+    mk("job-pesquisa", "Pesquisa de mercado semanal", 4, 700_000, 100),
+    mk("job-resumo", "Resumo semanal (Notion)", 4, 450_000, 100, true),
+    mk("job-panorama", "Edição semanal do jornal", 4, 300_000, 30, true),
+    mk("job-morning-brief", "Briefing de sistema ☀️", 18, 60_000, 26),
+  ];
+}
+
+function demoMemorias(): Memoria[] {
+  return [
+    {
+      arquivo: "MEMORY.md",
+      titulo: "Memória do agente (MEMORY.md)",
+      conteudo:
+        "Prefere relatórios executivos: 1 página, números primeiro, ação no final. §\n" +
+        "Canal de conteúdo: produção semanal (YouTube + newsletter), pipeline em planilha compartilhada. §\n" +
+        "Crons críticos: briefing matinal 8h15 (Telegram), pipeline de vagas 7h30 seg-sex, watchdog a cada 30min. §\n" +
+        "Lição: dashboards só mostram o que ajuda a decidir — se não responde 'o que faço agora?', cortar. §\n" +
+        "Provedor principal com timeout de 240s + fallback automático para evitar hang de crons.",
+      mtime: AGORA - 2 * D,
+      mtime_str: new Date(AGORA - 2 * D).toLocaleString("pt-BR"),
+      tamanho: 640,
+    },
+    {
+      arquivo: "USER.md",
+      titulo: "Perfil do usuário (USER.md)",
+      conteudo:
+        "Responde em português brasileiro. §\n" +
+        "Analista de dados em transição para AI Automation Specialist. §\n" +
+        "Prefere revisar antes de qualquer ação irreversível — aprovação explícita sempre. §\n" +
+        "Inglês avançado, aberto a oportunidades remotas e internacionais. §\n" +
+        "Manhãs são sagradas para foco; briefing deve caber em 30 segundos.",
+      mtime: AGORA - 1 * D,
+      mtime_str: new Date(AGORA - 1 * D).toLocaleString("pt-BR"),
+      tamanho: 410,
+    },
+  ];
+}
+
+function demoBriefing() {
+  return {
+    texto:
+      "# ☀️ Briefing de sistema — demo\n" +
+      "> Tudo ok: 12 automações rodaram, 0 erros nas últimas 24h.\n\n" +
+      "## ⚙️ Automações (últimas 24h)\n" +
+      "✅ Todas as 12 automações rodaram sem erro — briefings, pipeline de vagas, monitoramento de clientes e watchdog.\n\n" +
+      "## 📅 Hoje\n" +
+      "- 🛡️ Watchdog de automações — a cada 30min\n" +
+      "- 🌆 Briefing de e-mails — 17:30\n\n" +
+      "## 🎯 Próxima ação\n" +
+      "Nada urgente — sistema 100% saudável; foco do dia: o pipeline de conteúdo.",
+    quando: AGORA - 26 * H,
+  };
+}

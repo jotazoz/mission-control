@@ -1,10 +1,13 @@
-import { getUsoPorJob, getCustoTotal, fmtUsd, fmtTime, relTempo } from "@/lib/data";
+import { getUsoPorJob, getCustoTotal, getCustoSerie, fmtUsd, fmtTime, relTempo } from "@/lib/data";
+import { Wallet, TrendingUp, CircleDollarSign } from "lucide-react";
+import GraficoCusto from "./grafico";
 
 export const dynamic = "force-dynamic";
 
 export default function CustosPage() {
   const uso = getUsoPorJob();
   const custo = getCustoTotal();
+  const serie = getCustoSerie();
   const totalTokens = uso.reduce((a, u) => a + u.total_tokens, 0);
 
   return (
@@ -18,17 +21,22 @@ export default function CustosPage() {
 
       <div className="grid grid-cols-3 gap-3">
         <div className="card">
-          <div className="stat-label">Hoje</div>
+          <div className="mb-1 flex items-center gap-1.5"><CircleDollarSign className="h-3.5 w-3.5 text-emerald-400" /><span className="stat-label">Hoje</span></div>
           <div className="stat">{fmtUsd(custo.dia)}</div>
         </div>
         <div className="card">
-          <div className="stat-label">7 dias</div>
+          <div className="mb-1 flex items-center gap-1.5"><TrendingUp className="h-3.5 w-3.5 text-sky-400" /><span className="stat-label">7 dias</span></div>
           <div className="stat">{fmtUsd(custo.semana)}</div>
         </div>
         <div className="card">
-          <div className="stat-label">Mês</div>
+          <div className="mb-1 flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-indigo-400" /><span className="stat-label">Mês</span></div>
           <div className="stat">{fmtUsd(custo.mes)}</div>
         </div>
+      </div>
+
+      <div className="card">
+        <h2 className="mb-2 text-sm font-semibold text-slate-200">📈 Custo por dia (14 dias)</h2>
+        <GraficoCusto dados={serie} />
       </div>
 
       <div className="card">

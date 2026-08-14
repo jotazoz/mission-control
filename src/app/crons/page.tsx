@@ -1,4 +1,5 @@
 import { getJobs, getExecucoes, fmtTime, fmtHora } from "@/lib/data";
+import { Clock, History } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export default function CronsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-bold text-slate-100">Crons</h1>
+        <h1 className="flex items-center gap-2 text-xl font-bold text-slate-100"><Clock className="h-5 w-5 text-sky-400" /> Crons</h1>
         <p className="text-sm text-slate-500">{jobs.length} jobs · histórico de execuções em tempo real</p>
       </header>
 
@@ -73,7 +74,7 @@ export default function CronsPage() {
 
       {/* execuções recentes */}
       <div className="card">
-        <h2 className="mb-2 text-sm font-semibold text-slate-200">Execuções recentes</h2>
+        <h2 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-slate-200"><History className="h-4 w-4 text-indigo-400" /> Execuções recentes</h2>
         <div className="max-h-96 overflow-y-auto">
           <table className="w-full text-left text-[12px]">
             <thead className="sticky top-0 border-b border-slate-800 bg-[#0e1219] text-[10.5px] uppercase tracking-wide text-slate-500">
