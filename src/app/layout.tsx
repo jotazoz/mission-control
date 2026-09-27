@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-full bg-[#0b0e14] text-slate-200">
         <div className="flex min-h-screen">
           {/* sidebar */}
-          <aside className="w-56 shrink-0 border-r border-slate-800 bg-[#0e1219] p-4 flex flex-col gap-1">
+          <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col gap-1 overflow-y-auto border-r border-slate-800 bg-[#0e1219] p-4">
             <div className="mb-4 px-2 flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-indigo-600 shadow-lg shadow-sky-900/40">
                 <Activity className="h-5 w-5 text-white" />
@@ -79,7 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </aside>
           {/* conteúdo */}
-          <main className="flex-1 p-6 max-w-6xl">{children}</main>
+          <main className="min-w-0 flex-1 p-6 max-w-7xl">{children}</main>
         </div>
       </body>
     </html>

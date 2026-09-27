@@ -275,7 +275,7 @@ export default function Board({ projetos }: { projetos: Projeto[] }) {
       </div>
 
       {view === "board" && (
-        <div className="flex gap-3 overflow-x-auto pb-2">
+        <div className="flex gap-2.5 overflow-x-auto pb-2">
           {ORDEM_STATUS.map((s) => {
             const itens = porStatus(s);
             const meta = STATUS_META[s];
@@ -287,21 +287,21 @@ export default function Board({ projetos }: { projetos: Projeto[] }) {
                   if (dragId) salvar({ ...overrides, [dragId]: s });
                   setDragId(null);
                 }}
-                className={`flex w-[290px] shrink-0 flex-col rounded-lg border bg-[#0c1017] transition ${
+                className={`flex min-w-[178px] flex-1 flex-col rounded-lg border bg-[#0c1017] transition ${
                   dragId ? "border-sky-700/60 bg-sky-950/20" : "border-slate-800"
                 }`}
               >
-                <div className="flex items-center gap-2 border-b border-slate-800 px-3 py-2">
-                  <span>{meta.emoji}</span>
-                  <span className="text-[12.5px] font-semibold text-slate-200">{meta.label}</span>
+                <div className="flex items-center gap-1.5 border-b border-slate-800 px-2.5 py-2">
+                  <span className="text-[13px]">{meta.emoji}</span>
+                  <span className="truncate text-[12px] font-semibold text-slate-200">{meta.label}</span>
                   <span
-                    className="ml-auto rounded-full px-1.5 py-0.5 text-[10.5px] font-bold"
+                    className="ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[10.5px] font-bold"
                     style={{ background: `${meta.cor}22`, color: meta.cor }}
                   >
                     {itens.length}
                   </span>
                 </div>
-                <div className="flex flex-col gap-2 p-2">
+                <div className="flex flex-col gap-1.5 p-1.5">
                   {itens.map((p) => (
                     <CardProjeto
                       key={p.id}
@@ -421,20 +421,20 @@ function CardProjeto({
       draggable={draggable}
       onDragStart={onDragStart}
       onClick={onClick}
-      className={`cursor-pointer rounded-lg border border-slate-800 bg-[#0e1219] p-3 transition hover:border-slate-600 hover:bg-[#111621] ${
+      className={`cursor-pointer rounded-lg border border-slate-800 bg-[#0e1219] p-2.5 transition hover:border-slate-600 hover:bg-[#111621] ${
         draggable ? "active:cursor-grabbing" : ""
       }`}
     >
-      <div className="mb-1.5 flex items-start justify-between gap-2">
-        <span className="text-[13px] font-semibold leading-tight text-slate-100">{p.nome}</span>
+      <div className="mb-1.5 flex items-start justify-between gap-1.5">
+        <span className="text-[12px] font-semibold leading-tight text-slate-100">{p.nome}</span>
         <span
-          className="shrink-0 rounded px-1.5 py-0.5 text-[9.5px] font-bold uppercase"
+          className="shrink-0 rounded px-1 py-0.5 text-[9px] font-bold uppercase"
           style={{ background: `${PRIORIDADE_META[p.prioridade].cor}1f`, color: PRIORIDADE_META[p.prioridade].cor }}
         >
           {p.prioridade}
         </span>
       </div>
-      <p className="mb-2 line-clamp-2 text-[11.5px] leading-snug text-slate-400">{p.resumo}</p>
+      <p className="mb-1.5 line-clamp-2 text-[10.5px] leading-snug text-slate-400">{p.resumo}</p>
       <div className="mb-2 flex flex-wrap items-center gap-1.5">
         <span
           className="rounded-full px-2 py-0.5 text-[10px] font-medium"
