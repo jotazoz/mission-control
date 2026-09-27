@@ -55,12 +55,14 @@ const fmt = (iso: string) => {
   return { quando, quandoStr };
 };
 
-/** Pega só o briefing de verdade (o arquivo também guarda a skill + o prompt). */
+/** Pega só o briefing de verdade (o arquivo também guarda a skill + o prompt).
+ *  Nota: o regex NÃO pode usar classe `[☀🌆]` — os emojis carregam um variation
+ *  selector (U+FE0F) logo depois, que quebra o match de `\s*Briefing`. */
 function extrairBriefing(txt: string): string {
   const linhas = txt.split("\n");
   let idx = -1;
   for (let i = linhas.length - 1; i >= 0; i--) {
-    if (/^#\s*[☀🌆]\s*Briefing de e-mails/.test(linhas[i])) {
+    if (/^#\s*\S+\s+Briefing de e-mails/.test(linhas[i])) {
       idx = i;
       break;
     }
