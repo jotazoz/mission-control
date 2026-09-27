@@ -16,9 +16,11 @@ export default function ThemeToggle() {
   }, []);
 
   const alternar = () => {
-    const novo = !claro;
-    setClaro(novo);
+    // Lê o estado real do DOM em vez do state do React: cliques em sequência
+    // rápida (ou outro script mexendo na classe) deixariam o state desatualizado.
+    const novo = !document.documentElement.classList.contains("light");
     document.documentElement.classList.toggle("light", novo);
+    setClaro(novo);
     try {
       localStorage.setItem(CHAVE, novo ? "light" : "dark");
     } catch {}
