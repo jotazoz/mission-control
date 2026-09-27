@@ -3,6 +3,23 @@
 :root {
   --background: #0b0e14;
   --foreground: #e2e8f0;
+
+  /* cores das etiquetas (área/status/prioridade) — claras no tema escuro */
+  --c-Produto: #38bdf8;
+  --c-Conteudo: #f472b6;
+  --c-Panvel: #fb923c;
+  --c-Negocios: #facc15;
+  --c-Carreira: #4ade80;
+  --c-Estudos: #c084fc;
+  --c-Vida: #2dd4bf;
+  --c-backlog: #64748b;
+  --c-analise: #a78bfa;
+  --c-progresso: #38bdf8;
+  --c-feito: #34d399;
+  --c-arquivado: #6b7280;
+  --c-alta: #f87171;
+  --c-media: #fbbf24;
+  --c-baixa: #94a3b8;
 }
 
 @theme inline {
@@ -40,3 +57,75 @@ body {
 .badge-off {
   @apply inline-flex items-center rounded-full bg-slate-500/10 px-2 py-0.5 text-[11px] font-medium text-slate-500;
 }
+
+/* ===================================================================
+   TEMA CLARO
+   O app foi escrito com cores escuras fixas nas classes utilitárias.
+   Em vez de refatorar todas as páginas, sobrescrevemos as classes que
+   o projeto realmente usa quando <html> tem a classe .light.
+   `!important` é necessário para vencer a especificidade das utilitárias.
+   =================================================================== */
+html.light {
+  --background: #f6f7f9;
+  --foreground: #1f2937;
+
+  /* as etiquetas precisam ser mais escuras para ter contraste no branco */
+  --c-Produto: #0369a1;
+  --c-Conteudo: #be185d;
+  --c-Panvel: #c2410c;
+  --c-Negocios: #a16207;
+  --c-Carreira: #15803d;
+  --c-Estudos: #7e22ce;
+  --c-Vida: #0f766e;
+  --c-backlog: #475569;
+  --c-analise: #6d28d9;
+  --c-progresso: #0369a1;
+  --c-feito: #047857;
+  --c-arquivado: #4b5563;
+  --c-alta: #b91c1c;
+  --c-media: #b45309;
+  --c-baixa: #475569;
+}
+
+/* superfícies */
+html.light body { background: #f6f7f9; color: #1f2937; }
+html.light .bg-\[\#0b0e14\] { background-color: #f6f7f9 !important; }
+html.light .bg-\[\#0e1219\] { background-color: #ffffff !important; }
+html.light .bg-\[\#0c1017\] { background-color: #eef1f5 !important; }
+html.light .bg-\[\#111621\] { background-color: #f8fafc !important; }
+html.light .hover\:bg-\[\#111621\]:hover { background-color: #f8fafc !important; }
+html.light .bg-slate-800 { background-color: #e2e8f0 !important; }
+html.light .hover\:bg-slate-800\/60:hover,
+html.light .hover\:bg-slate-800\/30:hover { background-color: #eef1f5 !important; }
+
+/* bordas */
+html.light .border-slate-800 { border-color: #e3e8ef !important; }
+html.light .border-slate-700 { border-color: #cbd5e1 !important; }
+html.light .border-slate-600 { border-color: #94a3b8 !important; }
+html.light .hover\:border-slate-600:hover { border-color: #94a3b8 !important; }
+html.light .border-slate-800\/70 { border-color: #e3e8ef !important; }
+html.light .border-slate-800\/60 { border-color: #e3e8ef !important; }
+
+/* textos */
+html.light .text-slate-100 { color: #0f172a !important; }
+html.light .text-slate-200 { color: #1f2937 !important; }
+html.light .text-slate-300 { color: #374151 !important; }
+html.light .text-slate-400 { color: #4b5563 !important; }
+html.light .text-slate-500 { color: #6b7280 !important; }
+html.light .text-slate-600 { color: #9ca3af !important; }
+html.light .hover\:text-slate-100:hover { color: #0f172a !important; }
+html.light .hover\:text-slate-200:hover { color: #1f2937 !important; }
+html.light .hover\:text-slate-300:hover { color: #374151 !important; }
+
+/* componentes utilitários */
+html.light .card { border-color: #e3e8ef !important; background: #ffffff !important; }
+html.light .stat { color: #0f172a !important; }
+html.light .stat-label { color: #6b7280 !important; }
+html.light .badge-ok { background: rgba(16, 185, 129, 0.14) !important; color: #047857 !important; }
+html.light .badge-erro { background: rgba(244, 63, 94, 0.14) !important; color: #be123c !important; }
+html.light .badge-warn { background: rgba(245, 158, 11, 0.16) !important; color: #b45309 !important; }
+html.light .badge-off { background: rgba(100, 116, 139, 0.14) !important; color: #475569 !important; }
+
+/* barra lateral e sombras */
+html.light aside { border-color: #e3e8ef !important; }
+html.light .shadow-2xl { box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12) !important; }

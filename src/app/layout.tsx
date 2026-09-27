@@ -12,6 +12,7 @@ import {
   Mail,
 } from "lucide-react";
 import { isDemoMode } from "@/lib/data";
+import ThemeToggle from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
   title: "Mission Control — Hermes HQ",
@@ -40,6 +41,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
+        {/* aplica o tema salvo antes do primeiro paint, para não piscar */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("mc_tema")==="light")document.documentElement.classList.add("light")}catch(e){}`,
+          }}
+        />
       </head>
       <body className="min-h-full bg-[#0b0e14] text-slate-200">
         <div className="flex min-h-screen">
@@ -65,6 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </Link>
             ))}
             <div className="mt-auto space-y-2 px-2 pt-4">
+              <ThemeToggle />
               {DEMO && (
                 <div className="flex items-center gap-1.5 rounded-md bg-amber-500/10 px-2 py-1.5 text-[10.5px] font-medium text-amber-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />

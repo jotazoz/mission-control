@@ -26,28 +26,33 @@ export interface Projeto {
   nota?: string;
 }
 
+/* As cores das etiquetas vivem em variáveis CSS (definidas em globals.css) para
+   que a troca de tema escuro/claro não exija tocar no JS. `fundo()` gera o
+   preenchimento translúcido a partir da mesma variável. */
+export const fundo = (cor: string, pct = 15) => `color-mix(in srgb, ${cor} ${pct}%, transparent)`;
+
 export const STATUS_META: Record<Status, { label: string; emoji: string; cor: string; ordem: number }> = {
-  backlog:    { label: "Backlog / Ideias",  emoji: "💡", cor: "#64748b", ordem: 0 },
-  analise:    { label: "Em análise",        emoji: "🔍", cor: "#a78bfa", ordem: 1 },
-  progresso:  { label: "Em progresso",      emoji: "🔨", cor: "#38bdf8", ordem: 2 },
-  feito:      { label: "Concluído",         emoji: "✅", cor: "#34d399", ordem: 3 },
-  arquivado:  { label: "Arquivado",         emoji: "📦", cor: "#6b7280", ordem: 4 },
+  backlog:    { label: "Backlog / Ideias",  emoji: "💡", cor: "var(--c-backlog)", ordem: 0 },
+  analise:    { label: "Em análise",        emoji: "🔍", cor: "var(--c-analise)", ordem: 1 },
+  progresso:  { label: "Em progresso",      emoji: "🔨", cor: "var(--c-progresso)", ordem: 2 },
+  feito:      { label: "Concluído",         emoji: "✅", cor: "var(--c-feito)", ordem: 3 },
+  arquivado:  { label: "Arquivado",         emoji: "📦", cor: "var(--c-arquivado)", ordem: 4 },
 };
 
 export const AREA_META: Record<Area, { label: string; cor: string }> = {
-  Produto:   { label: "Produto próprio",  cor: "#38bdf8" },
-  Conteudo:  { label: "Conteúdo & Marca", cor: "#f472b6" },
-  Panvel:    { label: "Trabalho",         cor: "#fb923c" },
-  Negocios:  { label: "Negócios",         cor: "#facc15" },
-  Carreira:  { label: "Carreira",         cor: "#4ade80" },
-  Estudos:   { label: "Estudos",          cor: "#c084fc" },
-  Vida:      { label: "Finanças & Vida",  cor: "#2dd4bf" },
+  Produto:   { label: "Produto próprio",  cor: "var(--c-Produto)" },
+  Conteudo:  { label: "Conteúdo & Marca", cor: "var(--c-Conteudo)" },
+  Panvel:    { label: "Trabalho",         cor: "var(--c-Panvel)" },
+  Negocios:  { label: "Negócios",         cor: "var(--c-Negocios)" },
+  Carreira:  { label: "Carreira",         cor: "var(--c-Carreira)" },
+  Estudos:   { label: "Estudos",          cor: "var(--c-Estudos)" },
+  Vida:      { label: "Finanças & Vida",  cor: "var(--c-Vida)" },
 };
 
 export const PRIORIDADE_META: Record<Prioridade, { label: string; cor: string }> = {
-  alta:  { label: "Alta",  cor: "#f87171" },
-  media: { label: "Média", cor: "#fbbf24" },
-  baixa: { label: "Baixa", cor: "#94a3b8" },
+  alta:  { label: "Alta",  cor: "var(--c-alta)" },
+  media: { label: "Média", cor: "var(--c-media)" },
+  baixa: { label: "Baixa", cor: "var(--c-baixa)" },
 };
 
 export const PROJETOS: Projeto[] = [

@@ -22,6 +22,47 @@ export function isDemoMode(): boolean {
 }
 
 /* ------------------------------------------------------------------ */
+/* Saldo real da conta DeepSeek (API oficial, não estimativa)          */
+/* ------------------------------------------------------------------ */
+
+export interface SaldoDeepSeek {
+  disponivel: boolean;
+  usd: number | null;
+  recarregado: number | null;
+  bruto: number | null;
+  erro?: string;
+}
+
+/** Lê DEEPSEEK_API_KEY do ~/.hermes/.env e consulta /user/balance.
+ *  É o único número de custo que vem da fonte oficial; o resto do painel é estimativa. */
+export async function getSaldoDeepSeek(): Promise<SaldoDeepSeek> {
+  if (isDemoMode()) {
+    return { disponivel: true, usd: 42.5, recarregado: 40.0, bruto: 2.5 };
+  }
+  try {
+    const env = readFileSync(join(HERMES_HOME, ".env"), "utf-8");
+    const m = env.match(/^\s*DEEPSEEK_API_KEY\s*=\s*(.+)$/m);
+    if (!m) return { disponivel: false, usd: null, recarregado: null, bruto: null, erro: "chave não encontrada no .env" };
+    const key = m[1].trim().replace(/^["']|["']$/g, "");
+    const r = await fetch("https://api.deepseek.com/user/balance", {
+      headers: { Authorization: `Bearer ${key}` },
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000),
+    });
+    const j: any = await r.json();
+    const info = j?.balance_infos?.find?.((b: any) => b?.currency === "USD") ?? j?.balance_infos?.[0];
+    return {
+      disponivel: !!j?.is_available,
+      usd: info ? Number(info.total_balance) : null,
+      recarregado: info ? Number(info.topped_up_balance) : null,
+      bruto: info ? Number(info.granted_balance) : null,
+    };
+  } catch (e: any) {
+    return { disponivel: false, usd: null, recarregado: null, bruto: null, erro: String(e?.message ?? e) };
+  }
+}
+
+/* ------------------------------------------------------------------ */
 /* helpers                                                             */
 /* ------------------------------------------------------------------ */
 

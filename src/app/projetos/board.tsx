@@ -6,6 +6,7 @@ import {
   STATUS_META,
   AREA_META,
   PRIORIDADE_META,
+  fundo,
   type Area,
   type Projeto,
   type Status,
@@ -172,7 +173,7 @@ export default function Board({ projetos }: { projetos: Projeto[] }) {
                 style={{
                   borderColor: on ? AREA_META[a].cor : "#1e293b",
                   color: on ? AREA_META[a].cor : "#64748b",
-                  background: on ? `${AREA_META[a].cor}1a` : "transparent",
+                  background: on ? fundo(AREA_META[a].cor, 12) : "transparent",
                 }}
               >
                 {AREA_META[a].label}
@@ -191,7 +192,7 @@ export default function Board({ projetos }: { projetos: Projeto[] }) {
                 style={{
                   borderColor: on ? PRIORIDADE_META[p].cor : "#1e293b",
                   color: on ? PRIORIDADE_META[p].cor : "#64748b",
-                  background: on ? `${PRIORIDADE_META[p].cor}1a` : "transparent",
+                  background: on ? fundo(PRIORIDADE_META[p].cor, 12) : "transparent",
                 }}
               >
                 {PRIORIDADE_META[p].label}
@@ -296,7 +297,7 @@ export default function Board({ projetos }: { projetos: Projeto[] }) {
                   <span className="truncate text-[12px] font-semibold text-slate-200">{meta.label}</span>
                   <span
                     className="ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[10.5px] font-bold"
-                    style={{ background: `${meta.cor}22`, color: meta.cor }}
+                    style={{ background: fundo(meta.cor, 18), color: meta.cor }}
                   >
                     {itens.length}
                   </span>
@@ -395,7 +396,7 @@ function Barra({ v }: { v: number }) {
           className="h-full rounded-full"
           style={{
             width: `${v}%`,
-            background: v >= 100 ? "#34d399" : v >= 50 ? "#38bdf8" : "#fbbf24",
+            background: v >= 100 ? "var(--c-feito)" : v >= 50 ? "var(--c-progresso)" : "var(--c-media)",
           }}
         />
       </div>
@@ -429,7 +430,7 @@ function CardProjeto({
         <span className="text-[12px] font-semibold leading-tight text-slate-100">{p.nome}</span>
         <span
           className="shrink-0 rounded px-1 py-0.5 text-[9px] font-bold uppercase"
-          style={{ background: `${PRIORIDADE_META[p.prioridade].cor}1f`, color: PRIORIDADE_META[p.prioridade].cor }}
+          style={{ background: fundo(PRIORIDADE_META[p.prioridade].cor, 12), color: PRIORIDADE_META[p.prioridade].cor }}
         >
           {p.prioridade}
         </span>
@@ -438,7 +439,7 @@ function CardProjeto({
       <div className="mb-2 flex flex-wrap items-center gap-1.5">
         <span
           className="rounded-full px-2 py-0.5 text-[10px] font-medium"
-          style={{ background: `${AREA_META[p.area].cor}1a`, color: AREA_META[p.area].cor }}
+          style={{ background: fundo(AREA_META[p.area].cor, 12), color: AREA_META[p.area].cor }}
         >
           {AREA_META[p.area].label}
         </span>
