@@ -9,6 +9,7 @@ import {
   Brain,
   Activity,
   FolderKanban,
+  Mail,
 } from "lucide-react";
 import { isDemoMode } from "@/lib/data";
 
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
 const NAV = [
   { href: "/", label: "Visão geral", icon: LayoutDashboard },
   { href: "/projetos", label: "Projetos", icon: FolderKanban },
+  { href: "/emails", label: "E-mails", icon: Mail },
   { href: "/crons", label: "Crons", icon: Clock },
   { href: "/sessoes", label: "Sessões", icon: MessageSquare },
   { href: "/custos", label: "Custos", icon: Wallet },
